@@ -1,8 +1,14 @@
 cross = true;
 score = 0;
 
-// game = new Audio('music.mp3');
-// gameover = new Audio('gameover.mp3');
+
+game = new Audio('sounds/gamesound1.mp3');
+jump = new Audio('sounds/jump.mp3');
+gameend = new Audio('sounds/kill.mp3');
+
+setTimeout(() =>{
+    game.play()
+},1000);
 
 // Navigating the DOM for updating score and gameover
 scoreContainer = document.querySelector('.score');
@@ -14,6 +20,7 @@ document.onkeydown = function (e) {
     console.log("Key code is: ", e.keyCode)
     // For jumping our hero to avoid obstacle
     if (e.keyCode == 38) {
+        jump.play()
         hero.classList.add('animatehero');
         setTimeout(() => {
             hero.classList.remove('animatehero');
@@ -22,12 +29,16 @@ document.onkeydown = function (e) {
     // For moving our hero forward
     if (e.keyCode == 39) {
         heroX = parseInt(window.getComputedStyle(hero, null).getPropertyValue('left'));
-        hero.style.left = heroX + 60 + "px";
+        if (heroX < 1290)
+        hero.style.left = heroX + 40 + "px";
     }
     // For moving our hero backward
     if (e.keyCode == 37) {
         heroX = parseInt(window.getComputedStyle(hero, null).getPropertyValue('left'));
-        hero.style.left = (heroX - 60) + "px";
+        console.log(heroX);
+        if (heroX > 10){
+        hero.style.left = (heroX - 40) + "px";
+        }
     }
 }
 
@@ -48,17 +59,19 @@ setInterval(() => {
     // Checking distance between our hero and villain
     offsetX = Math.abs(dx - ox);
     offsetY = Math.abs(dy - oy);
-    console.log(offsetX, offsetY)
+    // console.log(offsetX, offsetY)
 
     // Setting a suitable threshold to see the collision
     if (offsetX < 150 && offsetY < 120) {
+        gameend.play();
         gameover.innerHTML = "Game Over - Reload to Try Again";
         villain.classList.remove('animatevillain');
-        // gameover.play();
-        // setTimeout(() => {
-        //     // gameover.pause();
-        //     game.pause();
-        // }, 1000);
+        
+        game.pause();
+        setTimeout(() => {
+              gameend.pause();
+          //  game.pause();
+        }, 850);
     }
 
     // If collision is not there then for updating score
